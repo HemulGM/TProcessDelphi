@@ -11,8 +11,9 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.StdCtrls;
 
 type
   TForm1 = class(TForm)
@@ -33,7 +34,8 @@ implementation
 
 {$R *.dfm}
 
-uses dprocess;  // this is the TProcess unit from FPC, now ported to delphi
+uses
+  Process;  // this is the TProcess unit from FPC, now ported to delphi
 
 procedure OutLn(s: string); overload;
 begin
@@ -47,14 +49,14 @@ end;
 
 procedure DoLog(s: string);
 begin
-  OutLn('Log: '+s);
+  OutLn('Log: ' + s);
 end;
 
 function RunProcess(const Binary: string; args: TStrings): boolean;
 const
   BufSize = 1024;
 var
-  p: TProcess;
+  Process: TProcess;
   // Buf: string;  // L505 note: must use ansistring
   Buf: ansistring; //
   Count: integer;
@@ -64,71 +66,74 @@ var
   OutputLine: ansistring; //
 
 begin
-  p := TProcess.Create(nil);
+  Process := TProcess.Create(nil);
   try
-    p.Executable := Binary;
+    Process.Executable := Binary;
 
-    p.Options := [poUsePipes,
-                  poStdErrToOutPut];
+    Process.Options := [poUsePipes,
+      poStdErrToOutPut];
 //    p.CurrentDirectory := ExtractFilePath(p.Executable);
-    p.ShowWindow := swoHIDE {ShowNormal};
+    Process.ShowWindow := swoHIDE {ShowNormal};
 
-    p.Parameters.Assign(args);
-    DoLog('Running command '+ p.Executable +' with arguments: '+ p.Parameters.Text);
-    p.Execute;
+    Process.Parameters.Assign(args);
+    DoLog('Running command ' + Process.Executable + ' with arguments: ' + Process.Parameters.Text);
+    Process.Execute;
 
     { Now process the output }
-    OutputLine:='';
-    SetLength(Buf,BufSize);
+    OutputLine := '';
+    SetLength(Buf, BufSize);
     repeat
-      if (p.Output<>nil) then
+      if (Process.Output <> nil) then
       begin
         // Count:=p.Output.Read(Buf[1],Length(Buf));
-        Count:=p.Output.Read(pchar(Buf)^, BufSize);  //L505 changed to pchar because of unicodestring
+        Count := Process.Output.Read(PChar(Buf)^, BufSize);  //L505 changed to pchar because of unicodestring
         // outln('DEBUG: len buf: ', length(buf));
       end
       else
-        Count:=0;
-      LineStart:=1;
-      i:=1;
-      while i<=Count do
+        Count := 0;
+      LineStart := 1;
+      i := 1;
+      while i <= Count do
       begin
         // L505
         //if Buf[i] in [#10,#13] then
-        if CharInSet(Buf[i], [#10,#13]) then
+        if CharInSet(Buf[i], [#10, #13]) then
         begin
-          OutputLine:=OutputLine+Copy(Buf,LineStart,i-LineStart);
+          OutputLine := OutputLine + Copy(Buf, LineStart, i - LineStart);
           outln(OutputLine);
-          OutputLine:='';
+          OutputLine := '';
           // L505
           //if (i<Count) and (Buf[i+1] in [#10,#13]) and (Buf[i]<>Buf[i+1]) then
-          if (i<Count) and (CharInset(Buf[i], [#10,#13])) and (Buf[i]<>Buf[i+1]) then
+          if (i < Count) and (CharInset(Buf[i], [#10, #13])) and (Buf[i] <> Buf[i + 1]) then
             inc(i);
-          LineStart:=i+1;
+          LineStart := i + 1;
         end;
         inc(i);
       end;
-      OutputLine:=Copy(Buf,LineStart,Count-LineStart+1);
-    until Count=0;
+      OutputLine := Copy(Buf, LineStart, Count - LineStart + 1);
+    until Count = 0;
     if OutputLine <> '' then
       outln(OutputLine);
 //  else
 //    outln('DEBUG: empty line');
-    p.WaitOnExit;
-    Result := p.ExitStatus = 0;
+    Process.WaitOnExit;
+    Result := Process.ExitStatus = 0;
     if not Result then
-      outln('Command '+ p.Executable +' failed with exit code: ', p.ExitStatus);
+      outln('Command ' + Process.Executable + ' failed with exit code: ', Process.ExitStatus);
   finally
-    FreeAndNil(p);
+    FreeAndNil(Process);
   end;
 end;
 
 const
-{$ifdef MSWINDOWS}prog = 'cmd';{$endif}
+{$ifdef MSWINDOWS}
+  prog = 'cmd'; {$endif}
 
-{$ifdef MACOS}prog = 'ls';{$endif}
+{$ifdef MACOS}
+  prog = 'ls'; {$endif}
 
-var args: TStringList;
+var
+  args: TStringList;
 
 {$ifdef MSWINDOWS}
 procedure SetArgs;
@@ -139,6 +144,7 @@ end;
 {$endif}
 
 {$ifdef MACOS}
+
 procedure SetArgs;
 begin
  // does LS require launching shell (sh) ??
@@ -150,7 +156,9 @@ begin
   args := TStringList.Create;
   SetArgs;
   RunProcess(prog, args);
-  args.free; args := nil;
+  args.free;
+  args := nil;
 end;
 
 end.
+

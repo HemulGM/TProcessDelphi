@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{FF37DDB2-CDAB-417F-B5C0-B1B64BEE2889}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="demo-simple\demo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="demo3\demo3.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="demo2\demo2.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="demo">
+        <MSBuild Projects="demo-simple\demo.dproj"/>
+    </Target>
+    <Target Name="demo:Clean">
+        <MSBuild Projects="demo-simple\demo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="demo:Make">
+        <MSBuild Projects="demo-simple\demo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="demo3">
+        <MSBuild Projects="demo3\demo3.dproj"/>
+    </Target>
+    <Target Name="demo3:Clean">
+        <MSBuild Projects="demo3\demo3.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="demo3:Make">
+        <MSBuild Projects="demo3\demo3.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="demo2">
+        <MSBuild Projects="demo2\demo2.dproj"/>
+    </Target>
+    <Target Name="demo2:Clean">
+        <MSBuild Projects="demo2\demo2.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="demo2:Make">
+        <MSBuild Projects="demo2\demo2.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="demo;demo3;demo2"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="demo:Clean;demo3:Clean;demo2:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="demo:Make;demo3:Make;demo2:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

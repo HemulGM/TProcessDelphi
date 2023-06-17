@@ -3,8 +3,9 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.StdCtrls;
 
 type
   TForm2 = class(TForm)
@@ -26,13 +27,26 @@ implementation
 {$R *.dfm}
 
 uses
-  dprocess;  // TProcess from FPC, ported to delphi
+  Process;
 
 procedure TForm2.Button1Click(Sender: TObject);
-var output: ansistring;
+var
+  Output: AnsiString;
 begin
-  RunCommand('cmd', ['/c', 'dir'], output, [poNoConsole]);
-  memo1.Lines.Add(output);
+  RunCommand('cmd', ['/c', 'dir'], Output, [poNoConsole]);
+  Memo1.Lines.Add(string(Output));
+
+  var P := TProcess.Create(nil);
+  try
+    P.ApplicationName := 'cmd';
+    P.Parameters.AddStrings(['/c', 'dir']);
+  finally
+    P.Free;
+  end;
 end;
 
+initialization
+  ReportMemoryLeaksOnShutdown := True;
+
 end.
+

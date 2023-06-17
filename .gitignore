@@ -1,0 +1,8 @@
+/__history
+*~
+/demo-simple/Win32/
+/demo2/Win32
+/demo3/Win32
+*.identcache
+*.local
+*.dsk

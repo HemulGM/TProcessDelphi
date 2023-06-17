@@ -2,7 +2,9 @@ program demo;
 
 uses
   Vcl.Forms,
-  Unit1 in 'Unit1.pas' {Form2};
+  Unit1 in 'Unit1.pas' {Form2},
+  Process in '..\Process.pas',
+  Pipes in '..\Pipes.pas';
 
 {$R *.res}
 
